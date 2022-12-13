@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=PT+Serif:wght@700&display=swap');
 
 .App {
   display:flex;
@@ -8,10 +7,6 @@
   height: 100vh;
   flex-direction: column;
   background: linear-gradient(#7DE5ED, #81C6E8,#5DA7DB);
-}
-
-.crud{
-  font-family: 'PT Serif', serif;
 }
 
 .App-logo {

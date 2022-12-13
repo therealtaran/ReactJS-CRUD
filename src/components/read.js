@@ -1,21 +1,26 @@
-import React,{useEffect,useState} from 'react'
-import { Icon, Menu, Table, Button, TableRow } from 'semantic-ui-react'
+import React,{useEffect,useState,useCallback,useRef} from 'react'
+import { Dimmer, Loader, Table, Button, TableRow, Pagination,Search } from 'semantic-ui-react'
 import axios from 'axios'
 import {Link} from 'react-router-dom'
 import {useNavigate} from 'react-router-dom'
+import {getPosts} from './api/axios'
+import SearchBar from './searchBar'
+import _ from "lodash"
+
 
 function Read() {
     let navigate=useNavigate()
-    const [ApiData,setApiData]=useState([])
+    //const [ApiData,setApiData]=useState([])
+    const [posts,setPosts]=useState([])
+    const [searchResults,setSearchResults]=useState([])
     useEffect(()=>{
         axios.get(`https://636cfd2c91576e19e31be059.mockapi.io/CRUD`)
         .then((getData)=>{
-            setApiData(getData.data)
+            setSearchResults(getData.data)
         })
     },[])
 
     const setData=(id,firstName,lastName)=>{
-            console.log(id)
             localStorage.setItem('ID',id)
             localStorage.setItem('firstName', firstName)
             localStorage.setItem('lastName',lastName)
@@ -25,7 +30,7 @@ function Read() {
     const getData=()=>{
         axios.get(`https://636cfd2c91576e19e31be059.mockapi.io/CRUD`)
         .then((getData)=>{
-            setApiData(getData.data)
+            setSearchResults(getData.data)
         })
     }
 
@@ -35,10 +40,45 @@ function Read() {
                 getData()
             })
     }
+
+    //searchbar implementation
+    
+    
+
+    useEffect(()=>{
+      getPosts().then(json=>{
+        setPosts(json)
+        
+        setSearchResults(json)
+      })//setPosts and setSearchResults will be same at first
+    },[])
+    //dependence array is empty as this happens only in load-time
+
+    //pagination implementation
+    const [currentPage,setCurrentPage]=useState(1)
+    let limit=5 //records per page
+
+    const onPageChange=(event,page)=>{
+      event.preventDefault()
+      setCurrentPage(page.activePage)
+    }
+
+    //tried implementing debounce
+  /*const [userQuery, setUserQuery] = useState("");
+  const delayedQuery = useRef(_.debounce(q => setUserQuery(q), 500), []);
+  const onChange = e => {
+    setUserQuery(e.target.value);
+    delayedQuery(e.target.value);
+  };*/
+
   return (
     <div>
-      <Table celled>
-    <Table.Header>
+      <SearchBar
+      posts={posts}
+      setSearchResults={setSearchResults}
+      />
+      <Table>
+      <Table.Header>
       <Table.Row>
         <Table.HeaderCell>ID</Table.HeaderCell>
         <Table.HeaderCell>First Name</Table.HeaderCell>
@@ -49,7 +89,8 @@ function Read() {
     </Table.Header>
 
     <Table.Body>
-        {ApiData.map((data)=>{
+        {searchResults.slice((currentPage-1)*limit,   //splitting the data to 5 records per page
+    (currentPage-1)*limit+limit).map((data)=>{
             return(
                 <Table.Row>
                     <Table.Cell>{data.id}</Table.Cell>
@@ -76,19 +117,13 @@ function Read() {
 
     <Table.Footer>
       <Table.Row>
-        <Table.HeaderCell colSpan='3'>
-          <Menu floated='right' pagination>
-            <Menu.Item as='a' icon>
-              <Icon name='chevron left' />
-            </Menu.Item>
-            <Menu.Item as='a'>1</Menu.Item>
-            <Menu.Item as='a'>2</Menu.Item>
-            <Menu.Item as='a'>3</Menu.Item>
-            <Menu.Item as='a'>4</Menu.Item>
-            <Menu.Item as='a' icon>
-              <Icon name='chevron right' />
-            </Menu.Item>
-          </Menu>
+        <Table.HeaderCell colSpan='5'>
+          <Pagination
+          activePage={currentPage}
+          totalPages={Math.ceil(searchResults.length / 5)}
+          onPageChange={onPageChange}
+
+          />
         </Table.HeaderCell>
       </Table.Row>
     </Table.Footer>
