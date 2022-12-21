@@ -10,16 +10,23 @@ function Create() {
     console.log(firstName)
     console.log(lastName)
     const sendDatatoAPI=()=>{
-        axios.post(`https://636cfd2c91576e19e31be059.mockapi.io/CRUD`,{
+        if(firstName===""||lastName===""){
+            alert("Both fields must be filled!")
+            return false;
+        }
+        else{
+            axios.post(`https://636cfd2c91576e19e31be059.mockapi.io/CRUD`,{
             firstName,
             lastName
         }).then(()=>{        //used to navigate to read page after clicking create
             navigate('/read')
         })
+        }
     }
+    
   return (
     <div>
-        <p>Make an entry</p>
+        <h3>Make an entry</h3>
       <Form>
             <Form.Field>
                 <label>First Name</label>

@@ -1,8 +1,7 @@
-import React, {useState,useCallback} from 'react'
+import React from 'react'
 import { Search } from 'semantic-ui-react'
-import _ from "lodash"
 
-    const SearchBar = ({posts, setSearchResults}) => { //receives posts and set.. from read.js
+    const SearchBar = ({posts, setSearchResults,setCurrentPage}) => { //receives posts and set.. from read.js
     /*const [query,setQuery]=useState("")
     const sendQuery = query => setQuery(query)
     const delayedQuery = useCallback(_.debounce(q => sendQuery(q), 500), []);
@@ -27,6 +26,7 @@ import _ from "lodash"
         || (post.lastName.toLowerCase().includes(e.target.value.toLowerCase())))
 
         setSearchResults(resultsArray)
+        setCurrentPage(1)
     }
 
   return (
@@ -34,6 +34,7 @@ import _ from "lodash"
       <Search
       placeholder='Search...'
       onSearchChange={handleSearchChange}
+      showNoResults={false}
       />
     </div>
   )

@@ -1,24 +1,33 @@
-import React,{useEffect,useState,useCallback,useRef} from 'react'
-import { Dimmer, Loader, Table, Button, TableRow, Pagination,Search } from 'semantic-ui-react'
+import React,{useEffect,useState} from 'react'
+import { Table, Button, TableRow, Pagination } from 'semantic-ui-react'
 import axios from 'axios'
 import {Link} from 'react-router-dom'
 import {useNavigate} from 'react-router-dom'
 import {getPosts} from './api/axios'
 import SearchBar from './searchBar'
-import _ from "lodash"
-
 
 function Read() {
     let navigate=useNavigate()
     //const [ApiData,setApiData]=useState([])
     const [posts,setPosts]=useState([])
     const [searchResults,setSearchResults]=useState([])
+
+    //getting data and setting searchresults
     useEffect(()=>{
         axios.get(`https://636cfd2c91576e19e31be059.mockapi.io/CRUD`)
         .then((getData)=>{
             setSearchResults(getData.data)
         })
-    },[])
+    
+    getPosts().then(json=>{
+      setPosts(json)
+      
+      setSearchResults(json) //setPosts and setSearchResults will be same at first
+    })
+  },[])    //dependence array is empty as this happens only in load-time
+
+
+    
 
     const setData=(id,firstName,lastName)=>{
             localStorage.setItem('ID',id)
@@ -45,14 +54,14 @@ function Read() {
     
     
 
-    useEffect(()=>{
+    /*useEffect(()=>{
       getPosts().then(json=>{
         setPosts(json)
         
         setSearchResults(json)
-      })//setPosts and setSearchResults will be same at first
+      })
     },[])
-    //dependence array is empty as this happens only in load-time
+    */
 
     //pagination implementation
     const [currentPage,setCurrentPage]=useState(1)
@@ -76,6 +85,7 @@ function Read() {
       <SearchBar
       posts={posts}
       setSearchResults={setSearchResults}
+      setCurrentPage={setCurrentPage}
       />
       <Table>
       <Table.Header>
@@ -92,7 +102,7 @@ function Read() {
         {searchResults.slice((currentPage-1)*limit,   //splitting the data to 5 records per page
     (currentPage-1)*limit+limit).map((data)=>{
             return(
-                <Table.Row>
+                <Table.Row key={data.id}>
                     <Table.Cell>{data.id}</Table.Cell>
                     <Table.Cell>{data.firstName}</Table.Cell>
                     <Table.Cell>{data.lastName}</Table.Cell>
@@ -112,7 +122,11 @@ function Read() {
 
             )
         })}
-        <TableRow><Button color='blue' onClick={()=>{navigate('/')}}>+</Button></TableRow>
+        <TableRow>
+          <Table.Cell>
+            <Button color='blue' onClick={()=>{navigate('/')}}>+</Button>
+          </Table.Cell>
+        </TableRow>
     </Table.Body>
 
     <Table.Footer>

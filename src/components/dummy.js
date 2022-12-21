@@ -131,3 +131,12 @@ function Read() {
 export default Read
 
 
+<Navbar1>    
+      <InnerNavLeft>
+      <h2 className='crud'>CRUD - ReactJS</h2>
+      </InnerNavLeft>
+      <InnerNavRight>
+      <Link to='/'><h3 className='create'>Create</h3></Link>
+      <Link to='/read'><h3 className='rud'>Read/Update/Delete</h3></Link>
+      </InnerNavRight>
+    </Navbar1>
